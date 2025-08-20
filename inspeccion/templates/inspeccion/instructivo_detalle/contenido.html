@@ -1,0 +1,73 @@
+{% load static %}
+<div hx-trigger="instructivoDetalleChanged from:body"
+     hx-get="{% url 'inspeccion:instructivo_detalle_contenido' instructivo.id %}"
+     hx-target="this">
+    <div id="bloque_metodos" class="card mb-4 mb-md-0 overflow-auto">
+        <div class="card-header m-0 fw-semibold">METODOLOGÍA</div>
+        {% for ins_met in instructivo_metodos %}
+            <div class="card m-2">
+                <div id="header_metodos"
+                     class="card-header fw-semibold ps-2 container d-flex align-items-center">
+                    <div class="btn-group">
+                        <button hx-get="{% url 'inspeccion:metodo_editar' ins_met.metodo.id %}"
+                                hx-target="#dialog"
+                                class="btn bg-nuevo btn-sm text-end"
+                                title='Método'>
+                            <i class="bi bi-crosshair"></i>
+                        </button>
+                        <button hx-get="{% url 'inspeccion:instructivo_metodo_editar' ins_met.id %}"
+                                hx-target="#dialog"
+                                class="btn bg-editar btn-sm text-end"
+                                title='Instructivo-Método'>
+                            <i class="bi bi-crosshair2"></i>
+                        </button>
+                    </div>
+                    <div class="ms-2 text-truncate">{{ ins_met.metodo.id }} {{ ins_met.metodo.nombre }}</div>
+                </div>
+                <div class="card-body p-2">
+                    <div>
+                        <div class="m-0">
+                            <span class="fw-semibold">Referencia:</span> <span>{{ ins_met.metodo.norma }}</span>
+                        </div>
+                        <span class="fw-semibold">Crítico:</span> <span>{{ ins_met.critico|yesno:"Sí,No" }}</span> -
+                        <span class="fw-semibold">Cuando aplique:</span> <span>{{ ins_met.requerido|yesno:"Sí,No" }}</span>
+                        <ol class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="me-auto">
+                                    <div class="fw-semibold">Muestra</div>
+                                    <div>{{ ins_met.metodo.muestra }}</div>
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="me-auto">
+                                    <div class="fw-semibold">Actividades</div>
+                                    {% for contenido in ins_met.metodo.contenido_metodo.all %}
+                                        {% if contenido.tipo == "ACTIVIDAD" %}
+                                            <div>
+                                                {{ contenido.orden }}-
+                                                {{ contenido.descripcion }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="me-auto">
+                                    <div class="fw-semibold">Consideraciones</div>
+                                    {% for contenido in ins_met.metodo.contenido_metodo.all %}
+                                        {% if contenido.tipo == "CONSIDERACIÓN" %}
+                                            <div>
+                                                {{ contenido.orden }}-
+                                                {{ contenido.descripcion }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

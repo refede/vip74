@@ -1,0 +1,26 @@
+{% extends "core/lista_htmx_dt.html" %}
+{% block header_lista %}
+    <button hx-get="{% url 'inspeccion:metodo_contenido_crear' %}"
+            hx-target="#dialog"
+            class="btn btn-nuevo">
+        <i class="bi bi-plus-circle"></i> Nuevo
+    </button>
+{% endblock header_lista %}
+{% block lista_tabla %}
+    <table id="dataTable" class="table table-striped table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Método</th>
+                <th>Tipo</th>
+                <th>Orden</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas de datos serán manejadas por DataTables -->
+        </tbody>
+    </table>
+{% endblock lista_tabla %}
+{% block datatable %}
+	<script src="{% static 'inspeccion/js/dt-instructivo-metodo.js' %}"></script>
+{% endblock datatable %}

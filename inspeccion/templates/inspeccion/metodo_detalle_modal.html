@@ -1,0 +1,120 @@
+{% load static %}
+<div class="card modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Detalle del Método</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+    </div>
+    <div class="modal-body container py-3">
+        <div class="row">
+            <div class="col-lg-4">
+                <div id="bloque_info" class="card mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="my-3 fw-bold">{{ metodo.id }}</h5>
+                        <img src="{% static 'img/roll.png' %}" alt="Admin" height="60" width="60">
+                        <h6 class="my-3 fw-bold">{{ metodo.nombre }}</h6>
+                    </div>
+                </div>
+                <div class="card mb-4 mb-lg-0">
+                    <div class="card-body p-2">
+                        <ol class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Unidad(es)</div>
+                                    {% for un in metodo.propiedad.unidades.all %}<p class="mb-0">{{ un.simbolo }}</p>{% endfor %}
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Referencia</div>
+                                    {{ metodo.norma|default_if_none:"-" }}
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Muestra</div>
+                                    {{ metodo.muestra }}
+                                </div>
+                            </li>
+                            {% if metodo.velocidad %}
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Velocidad</div>
+                                        {{ metodo.velocidad }}mm/min
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Posicion</div>
+                                        {{ metodo.posicion }}
+                                    </div>
+                                </li>
+                            {% endif %}
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Estado</div>
+                                    {{ metodo.estado|yesno:"vigente,obsoleto" }}
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <button hx-get="{% url 'inspeccion:metodo_contenido_crear' metodo.id %}"
+                        hx-target="#dialog"
+                        class="mb-1 p-2 btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i>
+                    Agregar
+                </button>
+                <div class="card mb-2">
+                    <div class="card-header m-0 fw-semibold">ACTIVIDADES</div>
+                    <div class="card-body m-0 p-0">
+                        <ol class="list-group list-group-flush">
+                            {% for met_cont in metodo_contenido %}
+                                {% if met_cont.tipo == "ACTIVIDAD" %}
+                                    <li class="list-group-item p-2">
+                                        <span>
+                                            <button hx-get="{% url 'inspeccion:metodo_contenido_editar' met_cont.id %}"
+                                                    hx-target="#dialog"
+                                                    class="btn btn-success btn-sm text-end">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </span>
+                                        <span>{{ met_cont.orden }}-{{ met_cont.descripcion }}</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+                <div class="card mb-2">
+                    <div class="card-header m-0 fw-semibold">CONSIDERACIONES</div>
+                    <div class="card-body m-0 p-0">
+                        <ol class="list-group list-group-flush">
+                            {% for met_cont in metodo_contenido %}
+                                {% if met_cont.tipo == "CONSIDERACIÓN" %}
+                                    <li class="list-group-item p-2">
+                                        <span>
+                                            <button hx-get="{% url 'inspeccion:metodo_contenido_editar' met_cont.id %}"
+                                                    hx-target="#dialog"
+                                                    class="btn btn-success btn-sm text-end">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </span>
+                                        <span>{{ met_cont.orden }}-{{ met_cont.descripcion }}</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    </div>
+</div>

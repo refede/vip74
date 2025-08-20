@@ -1,0 +1,31 @@
+{% extends "base/index.html" %}
+{% load static %}
+{% block content_style %}
+{% endblock content_style %}
+{% block content %}
+    <section class="seccion-lista seccion-cabecera">
+        <div class="container-fluid mb-1">
+            <div class="row text-center fila-titulo">
+                <h1 class="col-md-6 align-self-end text-md-start p-0">{{ titulo|upper }}</h1>
+                <div class="col-md-6 ms-md-auto text-md-end p-0">
+                    {% block header_lista %}
+                    {% endblock header_lista %}
+                </div>
+            </div>
+        </div>
+        <div class="lista-sm">
+            {% if not obj %}
+                <div class="card fondo-rosa">
+                    <div class="card-header">
+                        <h3 class="card-title">NO HAY ELEMENTOS</h3>
+                    </div>
+                </div>
+            {% else %}
+                {% block lista_tabla %}
+                {% endblock lista_tabla %}
+            {% endif %}
+        </div>
+    </section>
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}

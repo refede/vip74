@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+import config.db as db
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,6 +33,25 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # * -- apps
+    "user.apps.UserConfig",
+    "core.apps.CoreConfig",
+    "almacen.apps.AlmacenConfig",
+    "inspeccion.apps.InspeccionConfig",
+    "procesamiento.apps.ProcesamientoConfig",
+    "productos.apps.ProductosConfig",
+    "ventas.apps.VentasConfig",
+    "dyd.apps.DydConfig",
+    "dashboard.apps.DashboardConfig",
+
+    # * -- otras apps
+    "widget_tweaks",
+    "import_export",
+    "django_extensions",
+    "django_htmx",
+    "django_filters",
+
+    # * -- nativas
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,6 +59,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
+
+WKHTMLTOPDF_PATH = str(BASE_DIR / "static" / "lib" / "wkhtmltox" / "bin" / "wkhtmltopdf.exe")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -47,6 +70,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # * -- otros
+    "django_htmx.middleware.HtmxMiddleware",
+    # "bases.middleware.HtmxLoginRequiredMiddleware",
+    "crum.CurrentRequestUserMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -54,7 +81,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -68,17 +95,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
+# DATABASES = db.SQLITE
+DATABASES = db.POSTGRESQL
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -98,23 +119,44 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Lima"
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
+INTERNAL_IPS = ["127.0.0.1"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
+STATICFILES_DIRS = [
+    BASE_DIR / "static/",
+]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login/"
+
+AUTH_USER_MODEL = "user.User"
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = (
+    True  # opional, as this will log you out when browser is closed
+)
+SESSION_COOKIE_AGE = 180  # 0r 3 * 60, same thing
+SESSION_SAVE_EVERY_REQUEST = (
+    True  # Will prrevent from logging you out after 300 seconds
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

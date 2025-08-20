@@ -1,0 +1,64 @@
+{% load static %}
+<div hx-trigger="metodoDetalleChanged from:body"
+     hx-get="{% url 'inspeccion:metodo_detalle_caracteristicas' metodo.id %}"
+     hx-target="this">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex flex-column flex-lg-row gap-2 align-items-start align-items-lg-center py-1">
+                <div class="d-none d-md-block">
+                    <img src="{% static 'img/roll.png' %}" alt="Admin" width="60" height="60">
+                </div>
+                <div>
+                    <h5 class="mb-1">{{ metodo.id }}</h5>
+                    <h5 class="fw-bold">{{ metodo.nombre }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4 mb-lg-0">
+        <div class="card-body p-2">
+            <ol class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Unidad(es)</div>
+                        {% for un in metodo.propiedad.unidades.all %}<p class="mb-0">{{ un.simbolo }}</p>{% endfor %}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Referencia</div>
+                        {{ metodo.norma|default_if_none:"-" }}
+                    </div>
+                </li>
+                {% if metodo.velocidad %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Velocidad</div>
+                            {{ metodo.velocidad }}mm/min
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Posicion</div>
+                            {{ metodo.posicion }}
+                        </div>
+                    </li>
+                {% endif %}
+                {% if metodo.muestra %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Muestra</div>
+                            {{ metodo.muestra }}
+                        </div>
+                    </li>
+                {% endif %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Estado</div>
+                        {{ metodo.estado|yesno:"vigente,obsoleto" }}
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>

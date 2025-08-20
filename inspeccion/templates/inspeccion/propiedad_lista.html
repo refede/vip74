@@ -1,0 +1,28 @@
+{% extends "core/lista_htmx_dt.html" %}
+{% load static %}
+{% block header_lista %}
+    <button hx-get="{% url 'inspeccion:propiedad_crear' %}"
+            hx-target="#dialog"
+            class="btn btn-nuevo">
+        <i class="bi bi-plus-circle"></i> Nuevo
+    </button>
+{% endblock header_lista %}
+{% block lista_tabla %}
+    <table id="dataTable" class="table table-striped table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Unidades</th>
+                <th>Categoria</th>
+                <th>Activo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas de datos serán manejadas por DataTables -->
+        </tbody>
+    </table>
+{% endblock lista_tabla %}
+{% block datatable %}
+	<script src="{% static 'inspeccion/js/dt-propiedad.js' %}"></script>
+{% endblock datatable %}

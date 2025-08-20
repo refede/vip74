@@ -1,0 +1,24 @@
+<div class="modal-content">
+    <div id="modal-header" class="modal-header">
+        <h5 class="modal-title">{{ titulo }}</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+    </div>
+    <div id="modal-body" class="modal-body my-2">
+        <p class="m-0">¿Estás seguro?</p>
+    </div>
+    <div id="modal-spinner"
+         class="d-flex align-items-center m-4 d-none modal-spinner">
+        <strong role="status">Procesando...</strong>
+        <div class="spinner-border ms-auto text-primary" aria-hidden="true"></div>
+    </div>
+    <div id="modal-footer" class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="confirm-update"
+                class="btn btn-warning"
+                hx-get="{{ url_accion }}"
+                hx-swap="none">Procesar</button>
+    </div>
+</div>

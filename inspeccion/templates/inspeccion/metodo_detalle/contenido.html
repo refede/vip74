@@ -1,0 +1,45 @@
+{% load static %}
+<div hx-trigger="metodoDetalleChanged from:body"
+     hx-get="{% url 'inspeccion:metodo_detalle_contenido' metodo.id %}"
+     hx-target="this">
+    <div class="card mb-2">
+        <div class="card-header m-0 fw-semibold">ACTIVIDADES</div>
+        <div id="bloque_metodo_actividades"
+             class="card-body m-0 p-0 overflow-auto">
+            <ol class="list-group list-group-flush">
+                {% for met_cont in metodo_contenido %}
+                    {% if met_cont.tipo == "ACTIVIDAD" %}
+                        <li class="list-group-item p-1">
+                            <button hx-get="{% url 'inspeccion:metodo_contenido_editar' met_cont.id %}"
+                                    hx-target="#dialog"
+                                    class="btn btn-sm text-primary">
+                                <i class="bi bi-vignette"></i>
+                            </button>
+                            {{ met_cont.orden }}-{{ met_cont.descripcion }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+    <div class="card mb-2">
+        <div class="card-header m-0 fw-semibold">CONSIDERACIONES</div>
+        <div id="bloque_metodo_consideraciones"
+             class="card-body m-0 p-0 overflow-auto">
+            <ol class="list-group list-group-flush">
+                {% for met_cont in metodo_contenido %}
+                    {% if met_cont.tipo == "CONSIDERACIÓN" %}
+                        <li class="list-group-item p-1">
+                            <button hx-get="{% url 'inspeccion:metodo_contenido_editar' met_cont.id %}"
+                                    hx-target="#dialog"
+                                    class="btn btn-sm text-primary">
+                                <i class="bi bi-vignette"></i>
+                            </button>
+                            {{ met_cont.orden }}-{{ met_cont.descripcion }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</div>

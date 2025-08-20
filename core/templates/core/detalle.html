@@ -1,0 +1,34 @@
+{% extends "base/index.html" %}
+{% load static %}
+{% block head %}
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+{% endblock head %}
+{% block content_style %}
+{% endblock content_style %}
+{% block content %}
+    <section class="seccion-lista">
+        <nav class="navbar px-0 py-2">
+            <div class="btn-group">
+                {% block header_detalle %}
+                {% endblock header_detalle %}
+            </div>
+        </nav>
+        <div class="card p-0 fondo-neutro">
+            <div class="card-body">
+                {% block lista_detalle %}
+                {% endblock lista_detalle %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}
+{% block js_page %}
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    {% block js_detalle %}
+    {% endblock js_detalle %}
+    {% block datatable %}
+    {% endblock datatable %}
+    <script src="{% static 'js/modal_handler.js' %}"></script>
+    <script src="{% static 'js/toast.js' %}"></script>
+{% endblock js_page %}

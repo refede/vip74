@@ -1,0 +1,48 @@
+{% extends "base/index.html" %}
+{% load static %}
+{% block head %}
+    <link href="https://cdn.datatables.net/2.1.2/css/dataTables.bootstrap5.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap5.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.2/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap5.js"></script>
+{% endblock head %}
+{% block content_style %}
+{% endblock content_style %}
+{% block mensajes %}
+{% endblock mensajes %}
+{% block content %}
+    <section class="seccion-lista">
+        <nav class="navbar px-0 py-2">
+            <div class="btn-group">
+                {% block header_lista %}
+                {% endblock header_lista %}
+            </div>
+        </nav>
+        <div class="card p-0">
+            <div class="card-header p-1">
+                <span class="titulo">{{ titulo|upper }}</span>
+            </div>
+            <div class="card-body p-1">
+                {% block lista_tabla %}
+                {% endblock lista_tabla %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}
+{% block js_page %}
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="{% static 'js/datatables_utils.js' %}"></script>
+    {% block datatable %}
+    {% endblock datatable %}
+    <script src="{% static 'js/modal_handler.js' %}"></script>
+    <script src="{% static 'js/datatables_handler.js' %}"></script>
+    <script src="{% static 'js/toast.js' %}"></script>
+{% endblock js_page %}

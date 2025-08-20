@@ -1,0 +1,31 @@
+{% extends "core/detalle.html" %}
+{% load static %}
+{% block header_detalle %}
+    <div class="btn-group"
+         role="group"
+         aria-label="Basic mixed styles example">
+        <button hx-get="{% url 'inspeccion:instructivo_metodo_crear' instructivo.id %}"
+                hx-target="#dialog"
+                class="btn btn-nuevo">
+            <i class="bi bi-plus-circle"></i> Método
+        </button>
+        <button hx-get="{% url 'inspeccion:instructivo_editar_parcial' instructivo.id %}"
+                hx-target="#dialog"
+                class="btn btn-editar">
+            <i class="bi bi-pencil-square"></i> Editar
+        </button>
+        <a href="{{ salir }}" class="btn btn-salir" role="button"><i class="bi bi-arrow-bar-left"></i> Salir</a>
+    </div>
+{% endblock header_detalle %}
+{% block lista_detalle %}
+    <div class="row">
+        <div id="instructivo-bloque" class="col-lg-4">
+            {% include "inspeccion/instructivo_detalle/caracteristicas.html" %}
+        </div>
+        <div class="col-lg-8">
+            {% include "inspeccion/instructivo_detalle/contenido.html" %}
+        </div>
+    </div>
+{% endblock lista_detalle %}
+{% block js_detalle %}
+{% endblock js_detalle %}

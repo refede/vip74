@@ -1,0 +1,10 @@
+{% load static %}
+<section class="seccion-hero">
+    <img class="hero-logo"
+         src="{% static 'img/favicon.png' %}"
+		 width="40"
+         height="40"
+         alt="Pandora" />
+    <div class="hero-bienvenida">Bienvenido</div>
+    <div class="hero-usuario">{{ request.user }}</div>
+</section>

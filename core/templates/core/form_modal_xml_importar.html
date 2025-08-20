@@ -1,0 +1,44 @@
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS="is-invalid" %}
+    <form hx-post="{{ request.path }}"
+          hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+          enctype="multipart/form-data"
+          class="modal-content">
+        <div class="modal-header">
+            <h6 class="modal-title">{{ titulo|upper }}</h6>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!-- Si hay errores en el formulario general -->
+            <div id="modal_fields" class="my-2">
+                {{ form.xml_file }}  <!-- Asegúrate de que el campo tenga la clase 'form-control' -->
+                <!-- Mostrar los errores del campo xml_file -->
+                {% if form.xml_file.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.xml_file.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p class="m-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="text-center my-3 d-none" id="spinner-container">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        </div>
+        <div id="modal-footer" class="modal-footer">
+            <span class="flex-grow-1"></span>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Cargar</button>
+        </div>
+    </form>
+{% endwith %}

@@ -1,0 +1,51 @@
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS="is-invalid" %}
+    <form hx-post="{{ request.path }}"
+          hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+          class="modal-content">
+        <div class="modal-header">
+            {% if item %}
+                <h5 class="modal-title">Editar {{ titulo|upper }}</h5>
+            {% else %}
+                <h5 class="modal-title">Nuevo</h5>
+            {% endif %}
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            {% for field in form.visible_fields %}
+                <div class="mb-2">
+                    <label class="form-label mb-0">{{ field.label_tag }}</label>
+                    {% render_field field %}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p class="m-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            {% if item %}
+                {% block boton_form %}
+                {% endblock boton_form %}
+            {% endif %}
+            <span class="flex-grow-1"></span>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            {% block boton_guardar_form %}
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            {% endblock boton_guardar_form %}
+        </div>
+    </form>
+{% endwith %}

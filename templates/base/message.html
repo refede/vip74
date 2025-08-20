@@ -1,0 +1,29 @@
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <script>
+            Swal.fire({
+                title: "Error",
+                text: "{{message}}",
+                icon: "error",
+            });
+            </script>
+        {% elif message.tags == 'success' %}
+            <script>
+            Swal.fire({
+                title: "Correcto",
+                text: "{{message}}",
+                icon: "success",
+            });
+            </script>
+        {% elif message.tags == 'warning' %}
+            <script>
+            Swal.fire({
+                title: "Ojo",
+                text: "{{message}}",
+                icon: "warning",
+            });
+            </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}

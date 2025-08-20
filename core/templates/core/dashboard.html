@@ -1,0 +1,24 @@
+{% extends "base/index.html" %}
+{% load static %}
+{% block head %}
+{% endblock head %}
+{% block content_style %}
+{% endblock content_style %}
+{% block mensajes %}
+{% endblock mensajes %}
+{% block content %}
+    <section class="seccion-lista">
+        <nav class="navbar px-0 py-2">
+            <div class="btn-group">
+                {% block header_lista %}
+                {% endblock header_lista %}
+            </div>
+        </nav>
+        {% block graph %}
+        {% endblock graph %}
+    </section>
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}
+{% block js_page %}
+{% endblock js_page %}

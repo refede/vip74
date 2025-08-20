@@ -1,0 +1,7 @@
+{% extends "core/form_modal.html" %}
+{% block boton_form %}
+    <button type="button"
+            class="btn btn-danger"
+            hx-post="{% url 'inspeccion:metodo_contenido_eliminar' pk=item.pk %}"
+            hx-confirm="¿Estás seguro de que deseas eliminar este objeto?">Eliminar</button>
+{% endblock boton_form %}

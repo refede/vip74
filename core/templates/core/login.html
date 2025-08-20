@@ -1,0 +1,93 @@
+{% extends "base/index.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block sidebar %}
+{% endblock sidebar %}
+{% block navbar %}
+{% endblock navbar %}
+{% block content %}
+    <main class="min-vh-100">
+        <section class="vh-100">
+            <div class="container h-100">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col col-xl-8">
+                        <div class="card" id="login_card">
+                            <div class="row g-0">
+                                <div class="col-md-6 col-lg-5 pt-5 d-none d-md-block">
+                                    <img src="{% static 'img/undraw_access.svg' %}"
+                                         alt="login form"
+                                         height="310"
+                                         width="350"
+                                         class="img-fluid"
+                                         id="login_img" />
+                                </div>
+                                <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                                    <div class="card-body p-4 p-lg-5 text-black">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <div class="d-flex align-items-center mb-3 pb-1">
+                                                <img src="{% static 'img/favicon.png' %}"
+                                                     height="35"
+                                                     width="35"
+                                                     alt="Pandora" />
+                                                <span class="h1 bold mb-0">Pandora</span>
+                                            </div>
+                                            <h6>Inicie sesión con sus credenciales</h6>
+                                            <small class="text-danger">
+                                                {% if messages %}
+                                                    {% for m in messages %}{{ m }}{% endfor %}
+                                                {% endif %}
+                                                {% if form.errors %}
+                                                    {% for field in form %}
+                                                        {% if field.errors %}
+                                                            {% for error in field.errors %}
+                                                                {{ error|escape }}
+                                                                <br>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if form.non_field_errors %}
+                                                        {% for error in form.non_field_errors %}
+                                                            {{ error|escape }}
+                                                            <br>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </small>
+                                            <div class="input-group mb-3">
+                                                {{ form.username|add_class:'form-control'|attr:'autocomplete:off'|attr:'placeholder:Ingrese su usuario' }}
+                                                <div class="input-group-append">
+                                                    <div class="input-group-text">
+                                                        <span>
+                                                            <i class="bi bi-person-fill"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                {{ form.password|add_class:'form-control'|attr:'autocomplete:off'|attr:'placeholder:Ingrese su password' }}
+                                                <div class="input-group-append">
+                                                    <div class="input-group-text">
+                                                        <span>
+                                                            <i class="bi bi-lock-fill"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="next" value="{{ request.GET.next }}">
+                                            <div class="pt-1 mb-4">
+                                                <button class="btn fondo-oscuro texto-claro btn-block" type="submit">Iniciar sesión</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}

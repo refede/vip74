@@ -1,0 +1,340 @@
+{% load static %}
+<div class="sidebar p-0">
+    <div class="offcanvas-md offcanvas-end"
+         tabindex="-1"
+         id="sidebarMenu"
+         aria-labelledby="sidebarMenuLabel">
+        <div class="offcanvas-header p-1">
+            <button type="button"
+                    class="btn-close p-0 m-0 btn-close-white"
+                    data-bs-dismiss="offcanvas"
+                    data-bs-target="#sidebarMenu"
+                    aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-md-flex flex-column p-0">
+            <a href="#"
+               class="py-2 d-flex flex-column align-items-center text-decoration-none">
+                <i class="sidebar-brand-image bi bi-hurricane d-block"></i>
+                <span class="sidebar-brand-text">VIPLASTIC PERÚ</span>
+            </a>
+            <hr class="my-1 text-white">
+                {% comment %} <!-- Item 1 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu1"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu1"><span><i class="bi bi-speedometer2"></i> Dashboard</span> 
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu1">
+                        <ul class="nav flex-column">
+                            <!-- Subitem 1.1 -->
+                            <li class="nav-item">
+                                <a class="nav-link d-flex justify-content-between align-items-center"
+                                   data-bs-toggle="collapse"
+                                   href="#submenu1sub1"
+                                   role="button"
+                                   aria-expanded="false"
+                                   aria-controls="submenu1sub1"><span><i class="bi bi-vignette"></i> Pedidos</span>
+                                   <i class="bi bi-chevron-down toggle-icon"></i>
+                                </a>
+                                <div class="collapse" id="submenu1sub1">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'dashboard:dash_anual' %}"><i class="bi bi-record"></i> Anual</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'dashboard:dash_mes' %}"><i class="bi bi-record"></i> Mensual</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'dashboard:dash_pendientes' %}"><i class="bi bi-record"></i> Pendientes</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'dashboard:dash_participacion' %}"><i class="bi bi-record"></i> Participacion</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'dashboard:dash_pedidos_cliente' %}"><i class="bi bi-record"></i> Cliente</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'dashboard:dash_pedidos_cliente_evolucion' %}"><i class="bi bi-record"></i> Cliente Evolucion</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li> {% endcomment %}
+                <!-- Item 2 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu2"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu2"><span><i class="bi bi-people"></i> Personal</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu2">
+                        <ul class="nav flex-column">
+                            <!-- Subitem 2.1 -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'user:persona_lista' %}"><i class="bi bi-vignette"></i> Personas</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            <ul class="nav nav-pills flex-column">
+                {% comment %} 
+                <!-- Item 3 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu3"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu3"><span><i class="bi bi-boxes"></i> Almacén</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu3">
+                        <ul class="nav flex-column">
+                            <li class="nav-item ">
+                                <a class="nav-link" href="{% url 'almacen:categoria_materia_lista' %}"><i class="bi bi-vignette"></i> Categorías</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'almacen:materia_lista' %}"><i class="bi bi-vignette"></i> Materia Prima</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'almacen:proveedor_lista' %}"><i class="bi bi-vignette"></i> Proveedores</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Item 4 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu4"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu4"><span><i class="bi bi-shop"></i> Ventas</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu4">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'ventas:cliente_lista' %}"><i class="bi bi-vignette"></i> Clientes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'ventas:pedido_lista' %}"><i class="bi bi-vignette"></i> Pedidos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'ventas:pedido_lista_pendiente' %}"><i class="bi bi-vignette"></i> Pendientes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'ventas:requerimiento_lista' %}"><i class="bi bi-vignette"></i> Requerimientos</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Item 5 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu5"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu5"><span><i class="bi bi-layers-half"></i> Productos</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu5">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'productos:articulo_lista' %}"><i class="bi bi-vignette"></i> Artículos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'productos:componente_lista' %}"><i class="bi bi-vignette"></i> Componentes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'productos:intermedio_lista' %}"><i class="bi bi-vignette"></i> Intermedios</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> 
+                <!-- Item 6 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu6"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu6"><span><i class="bi bi-gear-wide-connected"></i> Programación</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu6">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'ventas:pedido_lista_pendiente' %}"><i class="bi bi-vignette"></i> Pendientes</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="collapse" id="submenu6">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'procesamiento:partida_lista' %}"><i class="bi bi-vignette"></i> Partidas</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Item 7 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu7"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu7"><span><i class="bi bi-search"></i> Inspección</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu7">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link d-flex justify-content-between align-items-center"
+                                   data-bs-toggle="collapse"
+                                   href="#submenu7sub1"
+                                   role="button"
+                                   aria-expanded="false"
+                                   aria-controls="submenu7sub1"><span><i class="bi bi-vignette"></i> Materia prima</span>
+                                   <i class="bi bi-chevron-down toggle-icon"></i>
+                                </a>
+                                <div class="collapse" id="submenu7sub1">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="bi bi-record"></i> Muestras</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="bi bi-record"></i> Lotes</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex justify-content-between align-items-center"
+                                   data-bs-toggle="collapse"
+                                   href="#submenu7sub2"
+                                   role="button"
+                                   aria-expanded="false"
+                                   aria-controls="submenu7sub2"><span><i class="bi bi-vignette"></i> Partidas</span>
+                                   <i class="bi bi-chevron-down toggle-icon"></i>
+                                </a>
+                                <div class="collapse" id="submenu7sub2">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'procesamiento:rea_lista' %}"><i class="bi bi-record"></i> REA</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Item 8 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu8"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu8"><span><i class="bi bi-ubuntu"></i> D&D</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu8">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'ventas:requerimiento_lista' %}"><i class="bi bi-vignette"></i> Requerimientos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'productos:desarrollo_lista' %}"><i class="bi bi-vignette"></i> Desarrollos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dyd:respuesta_lista' %}"><i class="bi bi-vignette"></i> Respuestas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dyd:ensayo_lista' %}"><i class="bi bi-vignette"></i> Ensayos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dyd:diseno_lista' %}"><i class="bi bi-vignette"></i> Diseños</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Item 9 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu9"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu9"><span><i class="bi bi-cash-coin"></i> Costeo</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu9">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'productos:articulo_costo_lista' %}"><i class="bi bi-vignette"></i> Artículos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'productos:desarrollo_costo_lista' %}"><i class="bi bi-vignette"></i> Desarrollos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'procesamiento:formula_lista' %}"><i class="bi bi-vignette"></i> Fórmulas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'procesamiento:pigmentacion_lista' %}"><i class="bi bi-vignette"></i> Pigmentaciones</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <hr class="my-1 text-white">
+                <!-- Item 10 -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex justify-content-between align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#submenu10"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="submenu10"><span><i class="bi bi-list-columns-reverse"></i> Maestros</span>
+                       <i class="bi bi-chevron-down toggle-icon"></i>
+                    </a>
+                    <div class="collapse" id="submenu10">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'procesamiento:proceso_lista' %}"><i class="bi bi-vignette"></i> Procesos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'inspeccion:equipo_lista' %}"><i class="bi bi-vignette"></i> Equipos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'inspeccion:unidad_lista' %}"><i class="bi bi-vignette"></i> Unidades</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'inspeccion:propiedad_lista' %}"><i class="bi bi-vignette"></i> Propiedades</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'inspeccion:metodo_lista' %}"><i class="bi bi-vignette"></i> Métodos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'inspeccion:instructivo_lista' %}"><i class="bi bi-vignette"></i> Instructivos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'procesamiento:formulacion_lista' %}"><i class="bi bi-vignette"></i> Formulaciones</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> 
+                {% endcomment %}
+            </ul> 
+        </div>
+    </div>
+</div>
