@@ -1,4 +1,5 @@
 from django import forms
+from .models import *
 
 
 class BootstrapFormMixin:
@@ -63,4 +64,5 @@ class ImportarForm(BootstrapFormMixin, forms.Form):
 
 class ImportarXmlForm(BootstrapFormMixin, forms.Form):
     xml_file = forms.FileField(label="Seleccione un archivo XML")
+
 

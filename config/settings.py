@@ -17,7 +17,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -43,14 +42,12 @@ INSTALLED_APPS = [
     "ventas.apps.VentasConfig",
     "dyd.apps.DydConfig",
     "dashboard.apps.DashboardConfig",
-
     # * -- otras apps
     "widget_tweaks",
     "import_export",
     "django_extensions",
     "django_htmx",
     "django_filters",
-
     # * -- nativas
     "django.contrib.admin",
     "django.contrib.auth",
@@ -60,7 +57,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
-WKHTMLTOPDF_PATH = str(BASE_DIR / "static" / "lib" / "wkhtmltox" / "bin" / "wkhtmltopdf.exe")
+WKHTMLTOPDF_PATH = str(
+    BASE_DIR / "static" / "lib" / "wkhtmltox" / "bin" / "wkhtmltopdf.exe"
+)
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -72,7 +71,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # * -- otros
     "django_htmx.middleware.HtmxMiddleware",
-    # "bases.middleware.HtmxLoginRequiredMiddleware",
+    "core.middleware.HtmxLoginRequiredMiddleware",
     "crum.CurrentRequestUserMiddleware",
 ]
 
@@ -136,13 +135,12 @@ INTERNAL_IPS = ["127.0.0.1"]
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
-STATICFILES_DIRS = [
-    BASE_DIR / "static/",
-]
+# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
+STATIC_ROOT = BASE_DIR / "staticfiles/"
+STATICFILES_DIRS = [BASE_DIR / "static/",]
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_ROOT = BASE_DIR / "media/"
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
@@ -151,12 +149,10 @@ LOGOUT_REDIRECT_URL = "/login/"
 AUTH_USER_MODEL = "user.User"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = (
-    True  # opional, as this will log you out when browser is closed
+    True  # optional, as this will log you out when browser is closed
 )
 SESSION_COOKIE_AGE = 180  # 0r 3 * 60, same thing
-SESSION_SAVE_EVERY_REQUEST = (
-    True  # Will prrevent from logging you out after 300 seconds
-)
+SESSION_SAVE_EVERY_REQUEST = True  # Will prevent from logging you out after 180 seconds
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

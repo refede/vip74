@@ -1,0 +1,83 @@
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS="is-invalid" %}
+    <form hx-post="{{ request.path }}"
+          hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+          class="modal-content">
+        <div class="modal-header">
+            {% if item %}
+                <h5 class="modal-title">Editar {{ titulo|upper }}</h5>
+            {% else %}
+                <h5 class="modal-title">Nueva Materia Prima</h5>
+            {% endif %}
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="row g-2">
+                <div class="col-3">
+                    <label for="id_id" class="form-label">Código</label>
+                    {{ form.id|attr:"id=id_id" }}
+                </div>
+                <div class="col-7">
+                    <label for="id_nombre" class="form-label">Nombre</label>
+                    {{ form.nombre|attr:"id=id_nombre" }}
+                </div>
+                <div class="col-2">
+                    <label for="id_costo" class="form-label">Costo</label>
+                    {{ form.costo|attr:"id=id_costo" }}
+                </div>
+                <hr class="mt-2 mb-0">
+                <div class="mb-2">
+                    <label for="{{ form.categoria.id_for_label }}" class="form-label">{{ form.categoria.label }}</label>
+                    {# 1. Generamos la URL y la guardamos en una variable 'htmx_url' #}
+                    {% url 'almacen:htmx_materia_caracteristicas' as htmx_url %}
+                    {# 2. Ahora usamos esa variable dentro de render_field #}
+                    {% render_field form.categoria class+="form-select" hx-get=htmx_url hx-target="#caracteristicas-dinamicas" hx-swap="innerHTML" %}
+                </div>
+                <!-- Este div se llenará con los campos de input para las características -->
+                <div id="caracteristicas-dinamicas">
+                    <!-- Si estamos editando, incluimos los campos iniciales -->
+                    {% if object %}
+                        {% include "almacen/partials/campos_caracteristicas_valores.html" %}
+                    {% endif %}
+                </div>
+            </div>
+            <hr class="my-4">
+            <div>
+                {{ form.estado|attr:"id=id_estado" }}
+                <label class="form-check-label" for="id_estado">Estado</label>
+            </div>
+            <hr class="my-4">
+            <div class="col-12">
+                <label for="id_obs" class="form-label">Observación</label>
+                {{ form.obs|attr:"id=id_obs" }}
+            </div>
+            {% if form.errors %}
+                <div class="invalid-feedback">
+                    {% for field in form %}
+                        {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}<p class="m-0">{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+            <hr class="my-4">
+            <div class="modal-footer">
+                {% if item %}
+                    <button type="button"
+                            class="btn btn-danger"
+                            hx-post="{% url 'almacen:materia_eliminar' pk=item.pk %}"
+                            hx-confirm="¿Estás seguro de que deseas eliminar este objeto?">Eliminar</button>
+                {% endif %}
+                <span class="flex-grow-1"></span>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </form>
+{% endwith %}

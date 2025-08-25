@@ -10,7 +10,7 @@ urlpatterns = [
     # path("favicon.ico",     lambda _ : redirect('static/img/favicon.png', permanent=True)),
     path("",                include("core.urls")),
     path("user/",           include("user.urls")),
-    # path("almacen/",        include("almacen.urls")),
+    path("almacen/",        include("almacen.urls")),
     path("inspeccion/",     include("inspeccion.urls")),
     # path("procesamiento/",  include("procesamiento.urls")),
     # path("productos/",      include("productos.urls")),

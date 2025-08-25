@@ -1,0 +1,74 @@
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS="is-invalid" %}
+    <form hx-post="{{ request.path }}"
+          hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}'
+          class="modal-content">
+        <div class="modal-header">
+            {% if item %}
+                <h5 class="modal-title">Editar {{ titulo|upper }}</h5>
+            {% else %}
+                <h5 class="modal-title">Nueva Categoría</h5>
+            {% endif %}
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="row g-2">
+                <div class="col-9">
+                    <label for="id_nombre" class="form-label">Nombre</label>
+                    {{ form.nombre|attr:"id=id_nombre" }}
+                </div>
+                <div class="col-3">
+                    <label for="id_abreviatura" class="form-label">Abreviatura</label>
+                    {{ form.abreviatura|attr:"id=id_abreviatura" }}
+                </div>
+                <hr class="mt-2 mb-0">
+                <div id="hidden-caracteristicas">{{ form.caracteristicas }}</div>
+                <label class="form-label">Características Base:</label>
+                <div class="row">
+                    <div id="container-caracteristicas">{% include "almacen/partials/contenedor_caracteristicas.html" %}</div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div>
+                {{ form.bloque|attr:"id=bloque" }}
+                <label class="form-check-label" for="id_bloque">Bloque</label>
+            </div>
+            <div>
+                {{ form.estado|attr:"id=id_estado" }}
+                <label class="form-check-label" for="id_estado">Estado</label>
+            </div>
+            <hr class="my-4">
+            <div class="col-12">
+                <label for="id_obs" class="form-label">Observación</label>
+                {{ form.obs|attr:"id=id_obs" }}
+            </div>
+            {% if form.errors %}
+                <div class="invalid-feedback">
+                    {% for field in form %}
+                        {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}<p class="m-0">{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+            <hr class="my-4">
+            <div class="modal-footer">
+                {% if item %}
+                    <button type="button"
+                            class="btn btn-danger"
+                            hx-post="{% url 'almacen:categoria_materia_eliminar' pk=item.pk %}"
+                            hx-confirm="¿Estás seguro de que deseas eliminar este objeto?">Eliminar</button>
+                {% endif %}
+                <span class="flex-grow-1"></span>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </form>
+{% endwith %}

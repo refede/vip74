@@ -1,0 +1,17 @@
+{% for c in caracteristicas %}
+    <div class="mb-1">
+        <div class="row g-2">
+            <div class="col-3">
+                <label for="caracteristica_{{ c.id }}" class="form-label">{{ c.nombre }}</label>
+            </div>
+            <div class="col-9">
+                <input type="text"
+                       name="caracteristica_{{ c.id }}"
+                       id="caracteristica_{{ c.id }}"
+                       class="form-control"
+                       value="{{ c.valor_actual|default:'' }}">
+            </div>
+            <!-- El 'name' es crucial para poder recuperarlo en la vista POST -->
+        </div>
+    </div>
+{% endfor %}

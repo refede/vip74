@@ -1,0 +1,42 @@
+{% extends "core/lista_htmx_dt_sp.html" %}
+{% load static %}
+
+{% block header_lista %}
+    <button hx-get="{% url 'almacen:materia_crear' %}"
+            hx-target="#dialog"
+            class="btn btn-nuevo">
+        <i class="bi bi-plus-circle"></i> Nuevo
+    </button>
+    <button hx-get="{% url 'almacen:materia_precio_bloque' %}"
+            hx-target="#dialog"
+            class="btn btn-clonar bg-success text-white">
+        <i class="bi bi-currency-dollar"></i> Costo
+    </button>
+    <button hx-get="{% url 'almacen:materia_importar' %}"
+            hx-target="#dialog"
+            class="btn btn-importar">
+        <i class="bi bi-download"></i> Importar
+    </button>
+{% endblock header_lista %}
+
+{% block lista_tabla %}
+    <table id="dataTable" class="table table-striped table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Activo</th>
+                <th>Costo</th>
+                <th>Fecha</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas de datos serán manejadas por DataTables -->
+        </tbody>
+    </table>
+{% endblock lista_tabla %}
+{% block datatable %}
+    <script src="{% static 'almacen/js/dt-materia.js' %}"></script>
+{% endblock datatable %}

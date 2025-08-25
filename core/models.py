@@ -48,31 +48,3 @@ class BaseModel(models.Model):
     #         raise ValidationError({'ancho': ('El ancho debe ser un valor positivo.')})
     #     if self.peso is not None and self.peso <= 0:
     #         raise ValidationError({'peso': ('El peso debe ser un valor positivo.')})
-
-
-class Caracteristica(BaseModel):
-    """
-    Catálogo central de todas las características.
-    """
-
-    nombre = models.CharField(
-        max_length=50,
-        unique=True,
-        help_text="Nombre de la característica.",
-    )
-    descripcion = models.TextField(
-        blank=True, help_text="Explicación de qué es esta característica."
-    )
-    tipo_dato = models.CharField(
-        max_length=3, choices=TIPO_DATO, default="TXT"
-    )
-
-    class Meta:
-        verbose_name = "Característica"
-        verbose_name_plural = "Características"
-        ordering = ["nombre"]
-
-    def __str__(self):
-        return self.nombre
-
-
