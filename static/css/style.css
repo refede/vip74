@@ -326,15 +326,19 @@ nav a {
     /* margin-bottom: 0rem !important; */
 }
 
-table > tbody > tr > td.dt-actions-cell div.actions-container {
-    opacity: 0 !important; /* <-- Usa !important temporalmente para probar */
-    visibility: hidden !important; /* <-- Usa !important temporalmente para probar */
+table>tbody>tr>td.dt-actions-cell div.actions-container {
+    opacity: 0 !important;
+    /* <-- Usa !important temporalmente para probar */
+    visibility: hidden !important;
+    /* <-- Usa !important temporalmente para probar */
     transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
 }
 
-table > tbody > tr:hover > td.dt-actions-cell div.actions-container {
-    opacity: 1 !important; /* <-- Usa !important temporalmente para probar */
-    visibility: visible !important; /* <-- Usa !important temporalmente para probar */
+table>tbody>tr:hover>td.dt-actions-cell div.actions-container {
+    opacity: 1 !important;
+    /* <-- Usa !important temporalmente para probar */
+    visibility: visible !important;
+    /* <-- Usa !important temporalmente para probar */
     transition-delay: 0s;
 }
 
@@ -393,23 +397,29 @@ td {
 /** HOVER DEL DATATABLE */
 
 /* Ocultar por defecto */
-table#dataTable > tbody > tr > td.dt-actions-cell div.actions-container {
-    opacity: 0 !important; /* <-- Usa !important temporalmente para probar */
-    visibility: hidden !important; /* <-- Usa !important temporalmente para probar */
+table#dataTable>tbody>tr>td.dt-actions-cell div.actions-container {
+    opacity: 0 !important;
+    /* <-- Usa !important temporalmente para probar */
+    visibility: hidden !important;
+    /* <-- Usa !important temporalmente para probar */
     transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
 }
 
 /* Mostrar en hover de fila */
-table#dataTable > tbody > tr:hover > td.dt-actions-cell div.actions-container {
-    opacity: 1 !important; /* <-- Usa !important temporalmente para probar */
-    visibility: visible !important; /* <-- Usa !important temporalmente para probar */
+table#dataTable>tbody>tr:hover>td.dt-actions-cell div.actions-container {
+    opacity: 1 !important;
+    /* <-- Usa !important temporalmente para probar */
+    visibility: visible !important;
+    /* <-- Usa !important temporalmente para probar */
     transition-delay: 0s;
 }
 
 /* Mostrar también con foco dentro de la fila (opcional pero recomendado) */
-table#dataTable > tbody > tr:focus-within > td.dt-actions-cell div.actions-container {
-    opacity: 1 !important; /* <-- Usa !important temporalmente para probar */
-    visibility: visible !important; /* <-- Usa !important temporalmente para probar */
+table#dataTable>tbody>tr:focus-within>td.dt-actions-cell div.actions-container {
+    opacity: 1 !important;
+    /* <-- Usa !important temporalmente para probar */
+    visibility: visible !important;
+    /* <-- Usa !important temporalmente para probar */
     transition-delay: 2s;
 }
 
@@ -563,6 +573,39 @@ footer {
 #barChartCliente {
     height: 600px;
 }
+
+
+/* Todas las opciones */
+.choices__item.choices__item--selectable {
+    font-size: 0.9rem;
+    /* Tamaño de letra */
+    padding: 6px 12px;
+    /* Espaciado */
+    background-color: #f8fcf8;
+    /* Fondo por defecto */
+    color: #1e293b;
+    /* Texto */
+    cursor: pointer;
+}
+
+/* Opción seleccionada (resaltada con hover/teclas) */
+.choices__item.choices__item--selectable.is-highlighted {
+    background-color: #f8fcf8;
+    /* Azul */
+    color: #407fd3;
+    /* Texto blanco */
+}
+
+/* Ítems ya elegidos (cuando es multiple) */
+.choices__list--multiple .choices__item {
+    background-color: #407fd3;
+    color: #fff;
+    border-radius: 0.25rem;
+    padding: 2px 8px;
+    margin: 2px;
+    font-size: 0.85rem;
+}
+
 
 /** Ancho de Columnas */
 

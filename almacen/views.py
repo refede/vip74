@@ -207,31 +207,12 @@ def categoria_materia_crear(request):
             categoria = form.save()
             return HttpResponse(
                 status=204,
-                headers={
-                    "HX-Trigger": json.dumps(
-                        {
-                            "showMessage": f"{categoria.nombre} creado.",
-                        }
-                    )
-                },
+                headers={"HX-Trigger": json.dumps({"showMessage": f"{categoria.nombre} creado."})},
             )
     else:
         form = CategoriaMateriaForm()
-        # 1. Prepara las listas para el contexto.
-        # Para una nueva categoría, ninguna característica está seleccionada.
-        caracteristicas_seleccionadas = Caracteristica.objects.none()
 
-        # Y todas las características están disponibles para ser seleccionadas.
-        caracteristicas_disponibles = Caracteristica.objects.all()
-    return render(
-        request,
-        "almacen/categoria_materia_form.html",
-        {
-            "form": form,
-            "caracteristicas_seleccionadas": caracteristicas_seleccionadas,
-            "caracteristicas_disponibles": caracteristicas_disponibles,
-        },
-    )
+    return render(request, "almacen/categoria_materia_form.html", {"form": form})
 
 
 @login_required

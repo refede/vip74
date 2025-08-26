@@ -26,6 +26,10 @@ class CaracteristicaForm(BootstrapFormMixin, forms.ModelForm):
 
 class CategoriaMateriaForm(BootstrapFormMixin, forms.ModelForm):
     autofocus_field = "nombre"  # Especifica qué campo debe tener autofocus
+    caracteristicas = forms.ModelMultipleChoiceField(
+        queryset=Caracteristica.objects.all(),
+        required=False,
+        widget=forms.SelectMultiple(attrs={"class": "choices-multiple"})    )
 
     class Meta:
         model = CategoriaMateria
@@ -40,7 +44,7 @@ class CategoriaMateriaForm(BootstrapFormMixin, forms.ModelForm):
         ]
         widgets = {
             "obs": forms.Textarea(attrs={"rows": 2}),
-            "caracteristicas": forms.MultipleHiddenInput(),
+            # "caracteristicas": forms.MultipleHiddenInput(),
         }
 
 

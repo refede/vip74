@@ -25,11 +25,7 @@
                     {{ form.abreviatura|attr:"id=id_abreviatura" }}
                 </div>
                 <hr class="mt-2 mb-0">
-                <div id="hidden-caracteristicas">{{ form.caracteristicas }}</div>
-                <label class="form-label">Características Base:</label>
-                <div class="row">
-                    <div id="container-caracteristicas">{% include "almacen/partials/contenedor_caracteristicas.html" %}</div>
-                </div>
+                <div class="mb-3">{{ form.caracteristicas.label_tag }} {{ form.caracteristicas }}</div>
             </div>
             <hr class="my-4">
             <div>

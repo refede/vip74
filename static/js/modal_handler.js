@@ -122,6 +122,29 @@
         }
     });
 
+    // --- Aquí inicializamos Choices.js DESPUÉS de que HTMX hace el swap ---
+    document.body.addEventListener("htmx:afterSwap", (evt) => {
+        if (evt.detail.target.id === "dialog") {
+            console.log("Inicializando Choices.js en selects dentro del modal...");
+            const selects = evt.detail.target.querySelectorAll("select");
+            selects.forEach((select) => {
+                if (!select.dataset.choicesInitialized) {
+                    new Choices(select, {
+                        removeItemButton: true,
+                        searchEnabled: true,
+                        shouldSort: false,
+                        placeholder: true,
+                        placeholderValue: "Selecciona una opción",
+                        noResultsText: "No se encontraron resultados",
+                        noChoicesText: "No hay opciones disponibles",
+                        itemSelectText: "Presiona para seleccionar",
+                    });
+                    select.dataset.choicesInitialized = "true";
+                }
+            });
+        }
+    });
+
     // ANTES del intercambio (Swap) - Prevenir swap vacío para #dialog
     document.body.addEventListener("htmx:beforeSwap", (evt) => {
         if (!document.body.contains(modalElement)) return;
