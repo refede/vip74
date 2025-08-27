@@ -19,10 +19,7 @@ urlpatterns = [
     path("categoria/editar/<pk>/",      views.categoria_materia_editar,     name="categoria_materia_editar"),
     path("categoria/eliminar/<pk>/",    views.categoria_materia_eliminar,   name="categoria_materia_eliminar"),
 
-    # ¡LAS NUEVAS URLs PARA HTMX!
-    path('htmx/seleccionar-caracteristica/',    views.seleccionar_caracteristica,   name='seleccionar_caracteristica'),
-    path('htmx/deseleccionar-caracteristica/',  views.deseleccionar_caracteristica, name='deseleccionar_caracteristica'),
-    path('htmx/materia-caracteristicas/',       views.htmx_materia_caracteristicas, name='htmx_materia_caracteristicas'),
+    path('materia/detalles_categoria/', views.materia_detalles_categoria, name='materia_detalles_categoria'),
 
     path('materia/lista/',              views.materia_lista,            name='materia_lista'),
     path('materia/data/',               views.materia_data,             name='materia_data'),
@@ -34,6 +31,8 @@ urlpatterns = [
     path("materia/desactivar/<pk>/",    views.materia_desactivar,       name="materia_desactivar"),
     path("materia/importar/",           views.materia_importar,         name="materia_importar"),
 
+    path('materia/caracteristicas/',    views.materia_caracteristicas,  name='materia_caracteristicas'),
+    path('materia/especificaciones/',   views.materia_especificaciones, name='materia_especificaciones'),
     # path("proveedor/lista/",            views.proveedor_lista,      name="proveedor_lista"),
     # path("proveedor/data/",             views.proveedor_data,       name="proveedor_data"),
     # path("proveedor/crear/",            views.proveedor_crear,      name="proveedor_crear"),

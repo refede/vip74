@@ -2,6 +2,6 @@
 {% block boton_form %}
     <button type="button"
             class="btn btn-danger"
-            hx-post="{% url 'almacen:carcateristica_eliminar' pk=item.pk %}"
+            hx-post="{% url 'almacen:caracteristica_eliminar' pk=item.pk %}"
             hx-confirm="¿Estás seguro de que deseas eliminar este objeto?">Eliminar</button>
 {% endblock boton_form %}

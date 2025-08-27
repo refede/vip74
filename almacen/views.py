@@ -3,7 +3,7 @@ import json
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseServerError
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, HttpResponseRedirect, render
@@ -107,69 +107,6 @@ def caracteristica_eliminar(request, pk):
     )
 
 
-def seleccionar_caracteristica(request):
-    # Obtenemos la lista de IDs ya seleccionados que nos envía el frontend
-    # request.POST.getlist('caracteristicas') obtiene todos los valores con ese nombre
-    pks_seleccionados = request.POST.getlist("caracteristicas")
-
-    # Obtenemos el ID de la nueva característica que se acaba de cliquear
-    pk_nueva_caracteristica = request.POST.get("caracteristica_id")
-
-    # Añadimos la nueva a la lista (si no estaba ya)
-    if pk_nueva_caracteristica and pk_nueva_caracteristica not in pks_seleccionados:
-        pks_seleccionados.append(pk_nueva_caracteristica)
-
-    # Convertimos los IDs (que son strings) a enteros para la consulta
-    pks_seleccionados_int = [int(pk) for pk in pks_seleccionados if pk]
-
-    # Calculamos las nuevas listas
-    caracteristicas_seleccionadas = Caracteristica.objects.filter(
-        pk__in=pks_seleccionados_int
-    )
-    caracteristicas_disponibles = Caracteristica.objects.exclude(
-        pk__in=pks_seleccionados_int
-    )
-
-    # Preparamos el contexto para las plantillas parciales
-    context = {
-        "caracteristicas_seleccionadas": caracteristicas_seleccionadas,
-        "caracteristicas_disponibles": caracteristicas_disponibles,
-    }
-
-    # Renderizamos y devolvemos AMBOS partials.
-    # El usuario de django-htmx haría esto más fácil, pero vamos a hacerlo manualmente
-    # para que se entienda.
-
-    # Esto requiere que tus partials estén envueltos en un contenedor
-    # para que el swap 'outerHTML' funcione bien.
-    return render(request, "almacen/partials/contenedor_caracteristicas.html", context)
-
-
-def deseleccionar_caracteristica(request):
-    pks_seleccionados = request.POST.getlist("caracteristicas")
-    pk_a_quitar = request.POST.get("caracteristica_id")
-
-    # Quitamos la característica de la lista
-    if pk_a_quitar in pks_seleccionados:
-        pks_seleccionados.remove(pk_a_quitar)
-
-    pks_seleccionados_int = [int(pk) for pk in pks_seleccionados if pk]
-
-    caracteristicas_seleccionadas = Caracteristica.objects.filter(
-        pk__in=pks_seleccionados_int
-    )
-    caracteristicas_disponibles = Caracteristica.objects.exclude(
-        pk__in=pks_seleccionados_int
-    )
-
-    context = {
-        "caracteristicas_seleccionadas": caracteristicas_seleccionadas,
-        "caracteristicas_disponibles": caracteristicas_disponibles,
-    }
-
-    return render(request, "almacen/partials/contenedor_caracteristicas.html", context)
-
-
 # * CATEGORÍA
 
 
@@ -207,7 +144,11 @@ def categoria_materia_crear(request):
             categoria = form.save()
             return HttpResponse(
                 status=204,
-                headers={"HX-Trigger": json.dumps({"showMessage": f"{categoria.nombre} creado."})},
+                headers={
+                    "HX-Trigger": json.dumps(
+                        {"showMessage": f"{categoria.nombre} creado."}
+                    )
+                },
             )
     else:
         form = CategoriaMateriaForm()
@@ -234,9 +175,7 @@ def categoria_materia_editar(request, pk):
             )
     else:
         form = CategoriaMateriaForm(instance=item)
-    # La lógica de contexto es diferente aquí
-    seleccionadas = item.caracteristicas.all()
-    disponibles = Caracteristica.objects.exclude(pk__in=seleccionadas.values_list("pk"))
+
     return render(
         request,
         "almacen/categoria_materia_form.html",
@@ -244,8 +183,6 @@ def categoria_materia_editar(request, pk):
             "form": form,
             "item": item,
             "titulo": f"{item.nombre}",
-            "caracteristicas_seleccionadas": seleccionadas,
-            "caracteristicas_disponibles": disponibles,
         },
     )
 
@@ -315,17 +252,26 @@ def materia_crear(request):
             materia = form.save()
             # Ahora, iteramos sobre los datos del POST para encontrar nuestras características
             for key, value in request.POST.items():
-                if key.startswith('caracteristica_'):
+                if key.startswith("caracteristica_"):
                     # Si el input se llama 'caracteristica_5', el id es 5
-                    caracteristica_id = int(key.split('_')[1])
-                    
+                    caracteristica_id = int(key.split("_")[1])
                     # Si el usuario ha introducido un valor
                     if value:
                         # Creamos o actualizamos el objeto ValorCaracteristicaMateria
                         CaracteristicaMateria.objects.update_or_create(
                             materia=materia,
                             caracteristica_id=caracteristica_id,
-                            defaults={'valor': value}
+                            defaults={"valor": value},
+                        )
+                if key.startswith("propiedad_"):
+                    propiedad_id = int(key.split("_")[1])
+                    # Si el usuario ha introducido un valor
+                    if value:
+                        # Creamos o actualizamos el objeto ValorCaracteristicaMateria
+                        EspecificacionMateria.objects.update_or_create(
+                            materia=materia,
+                            propiedad_id=propiedad_id,
+                            defaults={"valor": value},
                         )
             return HttpResponse(
                 status=204,
@@ -352,74 +298,83 @@ def materia_crear(request):
 def materia_editar(request, pk):
     item = get_object_or_404(Materia, pk=pk)
     if request.method == "POST":
+        # try:
         form = MateriaForm(request.POST, instance=item)
         if form.is_valid():
-            materia = form.save() # Guardamos los cambios en Materia (nombre, costo, etc.)
-            # --- LÓGICA DE GUARDADO DE CARACTERÍSTICAS (¡Igual que en crear!) ---
+            materia = form.save()  # Guardamos los cambios principales de Materia
+            # --- LÓGICA DE GUARDADO DE CARACTERÍSTICAS Y ESPECIFICACIONES ---
             for key, value in request.POST.items():
-                if key.startswith('caracteristica_'):
-                    caracteristica_id = int(key.split('_')[1])
-                    
-                    # Si el valor no está vacío, lo guardamos/actualizamos
-                    if value:
+                # Manejo de Características
+                if key.startswith("caracteristica_"):
+                    caracteristica_id = int(key.split("_")[1])
+                    if value:  # Si hay un valor, crear o actualizar
                         CaracteristicaMateria.objects.update_or_create(
                             materia=materia,
                             caracteristica_id=caracteristica_id,
-                            defaults={'valor': value}
+                            defaults={"valor": value.strip()},
                         )
-                    # Si el valor está vacío, eliminamos la entrada si existe
-                    else:
+                    else:  # Si el valor está vacío, eliminar la relación si existe
                         CaracteristicaMateria.objects.filter(
-                            materia=materia,
-                            caracteristica_id=caracteristica_id
+                            materia=materia, caracteristica_id=caracteristica_id
                         ).delete()
+                # Manejo de Especificaciones (Propiedades)
+                if key.startswith("propiedad_"):
+                    propiedad_id = int(key.split("_")[1])
+                    if value:  # Si hay un valor, crear o actualizar
+                        EspecificacionMateria.objects.update_or_create(
+                            materia=materia,
+                            propiedad_id=propiedad_id,
+                            defaults={"valor": value},
+                        )
+                    else:  # Si el valor está vacío, eliminar la relación si existe
+                        EspecificacionMateria.objects.filter(
+                            materia=materia, propiedad_id=propiedad_id
+                        ).delete()
+            # Respuesta de éxito para HTMX
             return HttpResponse(
                 status=204,
                 headers={
                     "HX-Trigger": json.dumps(
-                        {
-                            "showMessage": f"{item.nombre} editado.",
-                        }
+                        {"showMessage": f"{item.nombre} editado."}
                     )
                 },
             )
-    else:
+    else:  # Si es un método GET
         form = MateriaForm(instance=item)
 
-    # --- LÓGICA DE PREPARACIÓN DEL CONTEXTO (PARA GET y POST inválido) ---
-    
-    # 1. Obtenemos la plantilla de características desde la categoría de la materia
-    caracteristicas_plantilla = item.categoria.caracteristicas.all() # o .caracteristicas_plantilla
-
-    # 2. Obtenemos los valores que YA están guardados para esta materia en un diccionario
-    #    para un acceso rápido. Ej: {5: 'Rojo', 8: '150 HB'}
-    valores_guardados = {
-        vc.caracteristica_id: vc.valor
-        for vc in item.valores_caracteristicas.all()
+    # --- LÓGICA DE PREPARACIÓN DEL CONTEXTO (Se ejecuta para GET y para POST inválido) ---
+    # 1. Obtener plantillas desde la categoría
+    caracteristicas_plantilla = item.categoria.caracteristicas.all()
+    especificaciones_plantilla = item.categoria.especificaciones.all()
+    # 2. Obtener valores ya guardados para esta materia en diccionarios
+    valores_caracteristicas = {
+        vc.caracteristica_id: vc.valor for vc in item.valores_caracteristicas.all()
     }
-    
-    # 3. "Hidratamos" la plantilla con los valores guardados
-    #    Creamos una lista de objetos característica a la que le añadimos un atributo temporal
+    valores_especificaciones = {
+        es.propiedad_id: es.valor for es in item.propiedades_especificas.all()
+    }
+    # 3. "Hidratar" las plantillas con los valores guardados
     caracteristicas_con_valores = []
     for c in caracteristicas_plantilla:
-        c.valor_actual = valores_guardados.get(c.id, "") # Usamos .get() para evitar errores
+        c.valor_actual = valores_caracteristicas.get(c.id, "")
         caracteristicas_con_valores.append(c)
-
-    # 4. Construimos el contexto final
+    especificaciones_con_valores = []
+    for e in especificaciones_plantilla:
+        e.valor_actual = valores_especificaciones.get(e.id)
+        especificaciones_con_valores.append(e)
+    # 4. Construir el contexto final COMPLETO
     context = {
         "form": form,
         "item": item,
-        "object": item, # Es buena práctica incluir 'object' también
+        "object": item,
         "titulo": f"{item.nombre}",
-        # ¡La variable clave que le faltaba a tu plantilla parcial!
-        "caracteristicas": caracteristicas_con_valores, 
+        "caracteristicas": caracteristicas_con_valores,
+        "especificaciones": especificaciones_con_valores,
     }
-
-    # 5. Renderizamos la plantilla con el contexto completo
+    # 5. Renderizar la plantilla con el contexto completo
     return render(request, "almacen/materia_form.html", context)
 
 
-@login_required
 @require_POST
 def materia_eliminar(request, pk):
     item = get_object_or_404(Materia, pk=pk)
@@ -439,59 +394,102 @@ def materia_eliminar(request, pk):
 @login_required
 def materia_clonar(request, pk):
     objeto_a_clonar = get_object_or_404(Materia, pk=pk)
+    
     if request.method == "POST":
         form = MateriaClonarForm(request.POST)
         if form.is_valid():
-            objeto_nuevo_id = form.cleaned_data["nuevo_id"]
-            if Materia.objects.filter(id=objeto_nuevo_id).exists():
+            nuevo_id = form.cleaned_data["nuevo_id"]
+            
+            # 1. Verificación de unicidad del nuevo ID
+            if Materia.objects.filter(id=nuevo_id).exists():
                 form.add_error("nuevo_id", "El código ya existe.")
-                response = render(
+                return render(
                     request,
-                    "almacen/materia_clonar.html",
-                    {"form": form, "objeto_a_clonar": objeto_a_clonar},
-                )
-                return response
-            else:
-                objeto_nuevo = Materia(
-                    id=objeto_nuevo_id,
-                    nombre=f"{objeto_a_clonar.id} (Clonado)",
-                    categoria=objeto_a_clonar.categoria,
-                    tipo=objeto_a_clonar.tipo,
-                    composicion=objeto_a_clonar.composicion,
-                    construccion=objeto_a_clonar.construccion,
-                    caracteristica=objeto_a_clonar.caracteristica,
-                    brillo=objeto_a_clonar.brillo,
-                    grabado=objeto_a_clonar.grabado,
-                    pasadas=objeto_a_clonar.pasadas,
-                    espesor=objeto_a_clonar.espesor,
-                    peso=objeto_a_clonar.peso,
-                    ancho=objeto_a_clonar.ancho,
-                    costo=objeto_a_clonar.costo,
-                    estado=objeto_a_clonar.estado,
-                    obs=objeto_a_clonar.obs,
-                )
-                objeto_nuevo.save()
-                return HttpResponse(
-                    status=204,
-                    headers={
-                        "HX-Trigger": json.dumps(
-                            {
-                                "showMessage": f"Se ha generado el objeto: {objeto_nuevo_id}",
-                            }
-                        )
+                    "almacen/materia_clonar_form.html",
+                    {
+                        "form": form,
+                        "titulo": f"Clonar {objeto_a_clonar}",
                     },
                 )
-    else:
+            
+            # 2. Iniciar una transacción para garantizar "todo o nada"
+            try:
+                with transaction.atomic():
+                    # 2.1. Crear y guardar la nueva Materia (el objeto "padre")
+                    objeto_nuevo = Materia(
+                        id=nuevo_id,
+                        nombre=f"{objeto_a_clonar.nombre} (Clonado)", # Mejorado: clonar el nombre
+                        categoria=objeto_a_clonar.categoria,
+                        costo=objeto_a_clonar.costo,
+                        estado=objeto_a_clonar.estado,
+                        obs=objeto_a_clonar.obs,
+                    )
+                    objeto_nuevo.save()
+
+                    # 2.2. Clonar las Características relacionadas
+                    caracteristicas_originales = objeto_a_clonar.valores_caracteristicas.all()
+                    nuevas_caracteristicas = []
+                    for carac_original in caracteristicas_originales:
+                        nuevas_caracteristicas.append(
+                            CaracteristicaMateria(
+                                materia=objeto_nuevo,
+                                caracteristica=carac_original.caracteristica,
+                                valor=carac_original.valor
+                            )
+                        )
+                    
+                    if nuevas_caracteristicas:
+                        CaracteristicaMateria.objects.bulk_create(nuevas_caracteristicas)
+
+                    # 2.3. Clonar las Especificaciones relacionadas
+                    especificaciones_originales = objeto_a_clonar.propiedades_especificas.all()
+                    nuevas_especificaciones = []
+                    for espec_original in especificaciones_originales:
+                        nuevas_especificaciones.append(
+                            EspecificacionMateria(
+                                materia=objeto_nuevo,
+                                propiedad=espec_original.propiedad,
+                                valor=espec_original.valor
+                            )
+                        )
+
+                    if nuevas_especificaciones:
+                        EspecificacionMateria.objects.bulk_create(nuevas_especificaciones)
+
+            except Exception as e:
+                # Si algo falla dentro de la transacción, se revierte todo.
+                # Aquí puedes manejar el error, por ejemplo, mostrándolo al usuario.
+                # (Para simplificar, por ahora solo lo registramos o lo ignoramos)
+                # logger.error(f"Error al clonar materia: {e}")
+                form.add_error(None, f"Ocurrió un error inesperado durante la clonación: {e}")
+                return render(
+                    request,
+                    "almacen/materia_clonar_form.html",
+                    {
+                        "form": form,
+                        "titulo": f"Clonar {objeto_a_clonar}",
+                    },
+                )
+
+            # 3. Si todo salió bien, enviar la respuesta de éxito
+            return HttpResponse(
+                status=204,
+                headers={
+                    "HX-Trigger": json.dumps({
+                        "showMessage": f"Objeto {objeto_a_clonar.id} clonado a {nuevo_id} exitosamente."
+                    })
+                },
+            )
+
+    else: # Método GET
         form = MateriaClonarForm()
 
-    return render(
-        request,
-        "almacen/materia_clonar_form.html",
-        {
-            "form": form,
-            "titulo": f"Clonar {objeto_a_clonar}",
-        },
-    )
+    # Contexto para la petición GET y para cuando el formulario es inválido
+    context = {
+        "form": form,
+        "titulo": f"Clonar {objeto_a_clonar}",
+    }
+    return render(request, "almacen/materia_clonar_form.html", context)
 
 
 @login_required
@@ -675,36 +673,118 @@ def materia_importar(request):
     )
 
 
-def htmx_materia_caracteristicas(request):
+@login_required
+def materia_detalles_categoria(request):
+    """
+    Vista llamada por HTMX cuando cambia la categoría.
+    Devuelve un fragmento HTML que contiene los campos tanto para
+    características como para especificaciones.
+    """
+    categoria_id = request.GET.get("categoria")
+    materia_id = request.GET.get("materia_id")  # Para el caso de edición
+
+    if not categoria_id:
+        return HttpResponse("")
+
+    try:
+        categoria = CategoriaMateria.objects.get(pk=categoria_id)
+    except CategoriaMateria.DoesNotExist:
+        return HttpResponse("")
+
+    caracteristicas = categoria.caracteristicas.all()
+    especificaciones = categoria.especificaciones.all()
+
+    # Si estamos editando una materia, obtenemos sus valores actuales
+    if materia_id:
+        try:
+            materia = Materia.objects.get(pk=materia_id)
+
+            # Cargar valores de características
+            valores_caracteristicas = {
+                vc.caracteristica_id: vc.valor
+                for vc in materia.valores_caracteristicas.all()
+            }
+            for c in caracteristicas:
+                c.valor_actual = valores_caracteristicas.get(c.id, "")
+
+            # Cargar valores de especificaciones (¡CORRECCIÓN IMPORTANTE!)
+            # El related_name es 'propiedades_especificas' y el FK es 'propiedad'
+            valores_especificaciones = {
+                es.propiedad_id: es.valor
+                for es in materia.propiedades_especificas.all()
+            }
+            for e in especificaciones:
+                e.valor_actual = valores_especificaciones.get(e.id, None)
+
+        except Materia.DoesNotExist:
+            # Si la materia no existe, no hacemos nada con los valores
+            pass
+
+    context = {"caracteristicas": caracteristicas, "especificaciones": especificaciones}
+    # Renderizamos un nuevo template "wrapper" que incluye los otros dos
+    return render(request, "almacen/partials/materia_detalles_categoria.html", context)
+
+
+def materia_caracteristicas(request):
     """
     Vista llamada por HTMX cuando el usuario selecciona una categoría
     en el formulario de Materia. Devuelve los campos de input para
     las características de esa categoría.
     """
-    categoria_id = request.GET.get('categoria')
-    materia_id = request.GET.get('materia_id') # Para el caso de edición
+    categoria_id = request.GET.get("categoria")
+    materia_id = request.GET.get("materia_id")  # Para el caso de edición
 
     if not categoria_id:
         return HttpResponse("")
 
     categoria = CategoriaMateria.objects.get(pk=categoria_id)
-    caracteristicas = categoria.caracteristicas.all() # O 'caracteristicas_plantilla'
-    
+    caracteristicas = categoria.caracteristicas.all()  # O 'caracteristicas_plantilla'
+
     # Si estamos editando una materia, necesitamos obtener sus valores actuales
     if materia_id:
         materia = Materia.objects.get(pk=materia_id)
         valores_actuales = {
-            vc.caracteristica_id: vc.valor 
+            vc.caracteristica_id: vc.valor
             for vc in materia.valores_caracteristicas.all()
         }
         # Añadimos el valor actual a cada característica para pasarlo a la plantilla
         for c in caracteristicas:
             c.valor_actual = valores_actuales.get(c.id)
 
-    context = {
-        'caracteristicas': caracteristicas
-    }
-    return render(request, 'almacen/partials/campos_caracteristicas_valores.html', context)
+    context = {"caracteristicas": caracteristicas}
+    return render(
+        request, "almacen/partials/materia_caracteristicas_valores.html", context
+    )
+
+
+def materia_especificaciones(request):
+    """
+    analogos al anterior
+    """
+    categoria_id = request.GET.get("categoria")
+    materia_id = request.GET.get("materia_id")  # Para el caso de edición
+
+    if not categoria_id:
+        return HttpResponse("")
+
+    categoria = CategoriaMateria.objects.get(pk=categoria_id)
+    especificaciones = categoria.especificaciones.all()  # O 'caracteristicas_plantilla'
+
+    # Si estamos editando una materia, necesitamos obtener sus valores actuales
+    if materia_id:
+        materia = Materia.objects.get(pk=materia_id)
+        valores_actuales = {
+            vc.especificaciones_id: vc.valor
+            for vc in materia.valores_especificaciones.all()
+        }
+        # Añadimos el valor actual a cada característica para pasarlo a la plantilla
+        for c in especificaciones:
+            c.valor_actual = valores_actuales.get(c.id)
+
+    context = {"especificaciones": especificaciones}
+    return render(
+        request, "almacen/partials/materia_especificaciones_valores.html", context
+    )
 
 
 # * PROVEEDOR

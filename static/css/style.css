@@ -577,23 +577,27 @@ footer {
 
 /* Todas las opciones */
 .choices__item.choices__item--selectable {
-    font-size: 0.9rem;
+    font-size: 0.85rem !important;
     /* Tamaño de letra */
-    padding: 6px 12px;
+    padding: 1px 6px !important;
     /* Espaciado */
-    background-color: #f8fcf8;
+    background-color: var(--azure);
     /* Fondo por defecto */
-    color: #1e293b;
+    color: var(--berkeley-blue);
     /* Texto */
     cursor: pointer;
 }
 
 /* Opción seleccionada (resaltada con hover/teclas) */
 .choices__item.choices__item--selectable.is-highlighted {
-    background-color: #f8fcf8;
+    background-color: #f9f8fc;
     /* Azul */
     color: #407fd3;
     /* Texto blanco */
+    font-size: 0.85rem;
+    /* padding: 10px !important;
+    margin: 1px !important; */
+
 }
 
 /* Ítems ya elegidos (cuando es multiple) */
@@ -602,10 +606,11 @@ footer {
     color: #fff;
     border-radius: 0.25rem;
     padding: 2px 8px;
-    margin: 2px;
+    margin: 1px;
     font-size: 0.85rem;
 }
 
+choices-font-size-sm
 
 /** Ancho de Columnas */
 

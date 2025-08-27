@@ -31,16 +31,25 @@
                 <hr class="mt-2 mb-0">
                 <div class="mb-2">
                     <label for="{{ form.categoria.id_for_label }}" class="form-label">{{ form.categoria.label }}</label>
-                    {# 1. Generamos la URL y la guardamos en una variable 'htmx_url' #}
-                    {% url 'almacen:htmx_materia_caracteristicas' as htmx_url %}
-                    {# 2. Ahora usamos esa variable dentro de render_field #}
-                    {% render_field form.categoria class+="form-select" hx-get=htmx_url hx-target="#caracteristicas-dinamicas" hx-swap="innerHTML" %}
+                    {# 1. Generamos la URL base unificada #}
+                    {% url 'almacen:materia_detalles_categoria' as detalles_url %}
+                    {# 2. Lógica condicional para creación vs. edición #}
+                    {% if object %}
+                        {# PRIMERO: Usamos 'with' para construir la cadena JSON en una variable #}
+                        {% with htmx_vals_json='{"materia_id": "'|add:object.id|add:'"}' %}
+                            {# SEGUNDO: Pasamos la variable simple y limpia a render_field. ¡Sin comillas anidadas! #}
+                            {% render_field form.categoria class+="form-select" hx-get=detalles_url hx-target="#detalles-categoria" hx-swap="innerHTML" hx-trigger="change" hx-vals=htmx_vals_json %}
+                        {% endwith %}
+                    {% else %}
+                        {# En modo creación, no hay nada complejo que hacer #}
+                        {% render_field form.categoria class+="form-select" hx-get=detalles_url hx-target="#detalles-categoria" hx-swap="innerHTML" hx-trigger="change" %}
+                    {% endif %}
                 </div>
                 <!-- Este div se llenará con los campos de input para las características -->
-                <div id="caracteristicas-dinamicas">
-                    <!-- Si estamos editando, incluimos los campos iniciales -->
+                <div id="detalles-categoria" class="row">
+                    <!-- Si estamos editando, incluimos el contenido inicial de ambos -->
                     {% if object %}
-                        {% include "almacen/partials/campos_caracteristicas_valores.html" %}
+                        {% include "almacen/partials/materia_detalles_categoria.html" %}
                     {% endif %}
                 </div>
             </div>

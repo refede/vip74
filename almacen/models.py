@@ -22,17 +22,12 @@ class Caracteristica(BaseModel):
 
 
 class CategoriaMateria(BaseModel):
-    id              = models.BigAutoField(primary_key=True)
-    nombre          = models.CharField(max_length=60, unique=True, verbose_name="Nombre")
-    abreviatura     = models.CharField(max_length=25, unique=True, verbose_name="Abreviatura")
-    bloque          = models.BooleanField(verbose_name="Bloque", default=False)
-    caracteristicas = models.ManyToManyField(
-        Caracteristica,
-        null=True,
-        blank=True,
-        verbose_name="Características Base",
-        help_text="Características que deben tener las materias primas de esta categoría."
-    )
+    id                  = models.BigAutoField(primary_key=True)
+    nombre              = models.CharField(max_length=60, unique=True, verbose_name="Nombre")
+    abreviatura         = models.CharField(max_length=25, unique=True, verbose_name="Abreviatura")
+    bloque              = models.BooleanField(verbose_name="Bloque", default=False)
+    caracteristicas     = models.ManyToManyField(Caracteristica, blank=True, verbose_name="Características", related_name="categoria_caracteristicas")
+    especificaciones    = models.ManyToManyField('inspeccion.Propiedad', verbose_name="Especificaciones", related_name="categoria_especificaciones")
 
     def __str__(self):
         return self.nombre
@@ -42,11 +37,6 @@ class Materia(BaseModel):
     id                  = models.CharField(primary_key=True, max_length=9, verbose_name="Código")
     nombre              = models.CharField(max_length=50, unique=True, verbose_name="Nombre")
     categoria           = models.ForeignKey(CategoriaMateria, on_delete=models.CASCADE, verbose_name="Categoría", related_name="categoria_materia")
-    especificaciones    = models.ManyToManyField(
-        'inspeccion.Propiedad',
-        through="EspecificacionMateria",
-        related_name="materias_especificaciones",
-    )
     costo               = models.DecimalField(decimal_places=3, max_digits=10, verbose_name="Costo", null=True, blank=True)
 
     class Meta:
