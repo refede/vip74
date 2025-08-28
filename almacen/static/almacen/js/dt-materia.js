@@ -18,7 +18,7 @@ function initializeDataTable() {
 			preSelect: [
 				{
 					rows: ['activo'],
-					column: 10
+					column: 7
 				}
 			]
 		},
@@ -27,9 +27,9 @@ function initializeDataTable() {
 		pageLength: 15,
 		order: [[0, 'asc']],
 		columnDefs: [
-			// { searchPanes: { show: true }, targets: [2, 4] },
-			// { searchPanes: { show: false }, targets: [0, 1, 3, 5, 6] },
-			// { searchable: false, targets: [3, 4, 5, 6, 7, 8, 9] },
+			{ searchPanes: { show: true }, targets: [2, 8] },
+			{ searchPanes: { show: false }, targets: [0, 1, 3, 4, 5, 6, 7, 9, 10] },
+			{ searchable: false, targets: [4, 5, 6, 7, 9, 10] },
 			{ orderable: false, targets: [-1] },
             // { visible: false, targets: [2, 10] },
 		],
@@ -37,6 +37,14 @@ function initializeDataTable() {
 			{ data: 'id' },//0
 			{ data: 'nombre' },//01
 			{ data: 'categoria__nombre' },//02
+			{ data: 'tipo' },//03
+			{ data: "espesor",      render: $.fn.dataTable.render.number(',', '.', 3, '') },//04
+			{ data: "peso lineal",  render: $.fn.dataTable.render.number(',', '.', 1, '') },//05
+			{ data: "ancho",        render: $.fn.dataTable.render.number(',', '.', 2, '') },//06
+			{ data: "costo",        render: $.fn.dataTable.render.number(',', '.', 2, '') },//07
+			// { data: 'tipo' },
+			// { data: 'pasadas' },
+			// { data: 'factor' },
 			{
 				data: "estado",
 				render: function (data, type) {
@@ -49,14 +57,7 @@ function initializeDataTable() {
 					}
 					return data.toString();
 				}
-			},//4
-			// { data: 'tipo' },//03
-			// { data: 'pasadas' },//04
-			// { data: 'factor' },//05
-			// { data: "espesor", render: $.fn.dataTable.render.number('£', '.', 2, '') },//06
-			// { data: "peso", render: $.fn.dataTable.render.number('£', '.', 1, '') },//07
-			// { data: "ancho", render: $.fn.dataTable.render.number('£', '.', 2, '') },//08
-			{ data: "costo", render: $.fn.dataTable.render.number('£', '.', 2, '') },//03
+			},//8
 			{
 				data: 'date_updated', render: function (data, type) {
 					if (type === 'display' || type === 'filter') {
@@ -64,7 +65,7 @@ function initializeDataTable() {
 					}
 					return data;
 				}
-			},//5
+			},//9
 			{
 				data: "id",
                 className: "dt-actions-cell", // <--- CONFIRMA ESTA LÍNEA
@@ -102,7 +103,7 @@ function initializeDataTable() {
                                 </button>
                             </div>`;
 				}
-			}//6
+			}//10
 		],
 	};
     tableElement.DataTable(getDefaultDataTablesConfig(SpecificConfig));

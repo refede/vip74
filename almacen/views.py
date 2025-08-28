@@ -220,27 +220,55 @@ def materia_lista(request):
 
 @login_required
 def materia_data(request):
-    materias = list(
-        Materia.objects.all().values(
-            "id",
-            "nombre",
-            "categoria__nombre",
-            # "tipo",
-            # "composicion",
-            # "construccion",
-            # "caracteristica",
-            # "brillo",
-            # "grabado",
-            # "pasadas",
-            # "factor",
-            # "espesor",
-            # "peso",
-            # "ancho",
-            "costo",
-            "date_updated",
-            "estado",
-        )
+    # 1. Obtener todas las materias y pre-cargar sus características y el nombre de la característica
+    #    Esto hace solo 3 consultas a la BBDD, sin importar cuántas materias tengas. ¡Muy eficiente!
+    materias_qs = Materia.objects.all().prefetch_related(
+        'valores_caracteristicas__caracteristica',
+        'propiedades_especificas__propiedad',
     )
+    # 2. Construir la lista de datos a mano
+    materias = []
+    for materia in materias_qs:
+        # Creamos un diccionario base con los datos directos de la materia
+        materia_data = {
+            "id":                   materia.id,
+            "nombre":               materia.nombre,
+            "categoria__nombre":    materia.categoria.abreviatura,
+            "costo":                materia.costo,
+            "date_updated":         materia.date_updated,
+            "estado":               materia.estado,
+            # Añadimos valores por defecto para nuestras nuevas "columnas"
+            "tipo":                 None,
+
+            "espesor":              None,
+            "ancho":                None,
+            "peso lineal":          None,
+        }
+
+        # 3. Iterar sobre las especificaciones pre-cargadas (esto ya no consulta la BBDD)
+        for especificacion in materia.propiedades_especificas.all():
+            # El nombre de la propiedad está en especificacion.propiedad.nombre
+            nombre_propiedad = especificacion.propiedad.nombre.lower()
+            
+            # Si encontramos una de las propiedades que buscamos, la añadimos al diccionario.
+            # El valor es un DecimalField, por lo que no necesita conversión.
+            if nombre_propiedad == 'espesor':
+                materia_data['espesor'] = especificacion.valor
+            elif nombre_propiedad == 'peso lineal':
+                materia_data['peso lineal'] = especificacion.valor
+            elif nombre_propiedad == 'ancho':
+                materia_data['ancho'] = especificacion.valor
+
+        for caracteristica in materia.valores_caracteristicas.all():
+            # El nombre de la propiedad está en especificacion.propiedad.nombre
+            nombre_caracteristica = caracteristica.caracteristica.nombre.lower()
+            
+            # Si encontramos una de las propiedades que buscamos, la añadimos al diccionario.
+            # El valor es un DecimalField, por lo que no necesita conversión.
+            if nombre_caracteristica == 'tipo':
+                materia_data['tipo'] = caracteristica.valor
+        materias.append(materia_data)
+        # print(materias)
     return JsonResponse({"data": materias})
 
 
