@@ -237,9 +237,10 @@ def materia_data(request):
             "costo":                materia.costo,
             "date_updated":         materia.date_updated,
             "estado":               materia.estado,
-            # Añadimos valores por defecto para nuestras nuevas "columnas"
+            # características
             "tipo":                 None,
-
+            "estructura":          None,
+            # especificaciones <- propiedades
             "espesor":              None,
             "ancho":                None,
             "peso lineal":          None,
@@ -267,6 +268,8 @@ def materia_data(request):
             # El valor es un DecimalField, por lo que no necesita conversión.
             if nombre_caracteristica == 'tipo':
                 materia_data['tipo'] = caracteristica.valor
+            elif nombre_caracteristica == 'estructura':
+                materia_data['estructura'] = caracteristica.valor
         materias.append(materia_data)
         # print(materias)
     return JsonResponse({"data": materias})

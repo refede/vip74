@@ -29,6 +29,11 @@ class CategoriaMateria(BaseModel):
     caracteristicas     = models.ManyToManyField(Caracteristica, blank=True, verbose_name="Características", related_name="categoria_caracteristicas")
     especificaciones    = models.ManyToManyField('inspeccion.Propiedad', verbose_name="Especificaciones", related_name="categoria_especificaciones")
 
+    class Meta:
+        verbose_name = "Categoría de MP"
+        verbose_name_plural = "Categorías de MP"
+        ordering = ("id",)
+
     def __str__(self):
         return self.nombre
 
