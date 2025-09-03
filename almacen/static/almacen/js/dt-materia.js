@@ -27,8 +27,8 @@ function initializeDataTable() {
 		pageLength: 15,
 		order: [[0, 'asc']],
 		columnDefs: [
-			{ searchPanes: { show: true }, targets: [2, 9] },
-			{ searchPanes: { show: false }, targets: [0, 1, 3, 4, 5, 6, 7, 8, 10, 11] },
+			{ searchPanes: { show: true }, targets: [2, 3, 9] },
+			{ searchPanes: { show: false }, targets: [0, 1, 4, 5, 6, 7, 8, 10, 11] },
 			{ searchable: false, targets: [5, 6, 7, 8, 10, 11] },
 			{ orderable: false, targets: [-1] },
             // { visible: false, targets: [9] },

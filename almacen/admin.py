@@ -3,42 +3,26 @@ from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ManyToManyWidget
 from .models import Caracteristica, CategoriaMateria, Materia
+from .resources import CategoriaMateriaResource, MateriaResource
 from inspeccion.models import Propiedad
 
 
-# Definir el recurso para importar/exportar
-class CategoriaMateriaResource(resources.ModelResource):
-    # Declaramos explícitamente el campo 'caracteristicas'.
-    # Esto sobreescribe el comportamiento por defecto.
-    caracteristicas = fields.Field(
-        attribute='caracteristicas',  # El atributo en el modelo CategoriaMateria
-        widget=ManyToManyWidget(
-            model=Caracteristica,   # El modelo relacionado
-            field='nombre',         # El campo del modelo relacionado que se usará para buscar y mostrar
-            separator='|'           # El carácter que unirá/separará los múltiples valores
-        )
-    )
+@admin.register(Materia)
+class MateriaAdmin(ImportExportModelAdmin):
+    # Le decimos al admin que use la clase que hemos importado.
+    # El resto de su comportamiento no cambia.
+    resource_class = MateriaResource
+    
+    list_display = ('id', 'nombre', 'categoria', 'costo', 'estado')
+    search_fields = ('id', 'nombre', 'categoria__nombre')
+    list_filter = ('categoria', 'estado')
 
-    # Hacemos lo mismo para el campo 'especificaciones'.
-    especificaciones = fields.Field(
-        attribute='especificaciones',
-        widget=ManyToManyWidget(
-            model=Propiedad,        # El modelo relacionado
-            field='nombre',         # Asumo que Propiedad tiene un campo 'nombre' que es único o representativo
-            separator='|'
+    # Este método sigue siendo importante para la eficiencia de la exportación.
+    def get_export_queryset(self, request):
+        return super().get_export_queryset(request).prefetch_related(
+            'valores_caracteristicas__caracteristica',
+            'propiedades_especificas__propiedad'
         )
-    )
-    class Meta:
-        model = CategoriaMateria
-        fields = (
-            "id",
-            "nombre",
-            "abreviatura",
-            "bloque",
-            "caracteristicas",
-            "especificaciones",
-        )  # campos a incluir
-        # export_order = ("id", "nombre", "descripcion")
 
 
 @admin.register(CategoriaMateria)

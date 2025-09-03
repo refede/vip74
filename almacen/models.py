@@ -73,7 +73,7 @@ class CaracteristicaMateria(BaseModel):
 
     materia         = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name="valores_caracteristicas")
     caracteristica  = models.ForeignKey(Caracteristica, on_delete=models.CASCADE, related_name="valores_en_materias")
-    valor           = models.CharField(max_length=50, help_text="Valor de la característica para esta materia prima específica.")
+    valor           = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         verbose_name = "Característica de MP"

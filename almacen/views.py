@@ -238,8 +238,8 @@ def materia_data(request):
             "date_updated":         materia.date_updated,
             "estado":               materia.estado,
             # características
-            "tipo":                 None,
-            "estructura":          None,
+            "tipo":                 "",
+            "estructura":           "",
             # especificaciones <- propiedades
             "espesor":              None,
             "ancho":                None,

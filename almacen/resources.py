@@ -1,6 +1,6 @@
 from import_export import resources, fields
 from import_export.results import RowResult
-from import_export.widgets import ForeignKeyWidget
+from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from .models import (
     Materia,
     CategoriaMateria,
@@ -13,10 +13,45 @@ from inspeccion.models import (
 )  # Asegúrate de que esta importación sea correcta
 
 
+class CategoriaMateriaResource(resources.ModelResource):
+    # Declaramos explícitamente el campo 'caracteristicas'.
+    # Esto sobreescribe el comportamiento por defecto.
+    caracteristicas = fields.Field(
+        attribute="caracteristicas",  # El atributo en el modelo CategoriaMateria
+        widget=ManyToManyWidget(
+            model=Caracteristica,  # El modelo relacionado
+            field="nombre",  # El campo del modelo relacionado que se usará para buscar y mostrar
+            separator="|",  # El carácter que unirá/separará los múltiples valores
+        ),
+    )
+
+    # Hacemos lo mismo para el campo 'especificaciones'.
+    especificaciones = fields.Field(
+        attribute="especificaciones",
+        widget=ManyToManyWidget(
+            model=Propiedad,  # El modelo relacionado
+            field="nombre",  # Asumo que Propiedad tiene un campo 'nombre' que es único o representativo
+            separator="|",
+        ),
+    )
+
+    class Meta:
+        model = CategoriaMateria
+        fields = (
+            "id",
+            "nombre",
+            "abreviatura",
+            "bloque",
+            "caracteristicas",
+            "especificaciones",
+        )  # campos a incluir
+        # export_order = ("id", "nombre", "descripcion")
+
+
 class MateriaResource(resources.ModelResource):
     categoria = fields.Field(
         attribute="categoria",
-        widget=ForeignKeyWidget(model=CategoriaMateria, field="nombre"),
+        widget=ForeignKeyWidget(CategoriaMateria, "nombre"),
     )
 
     class Meta:
@@ -26,55 +61,88 @@ class MateriaResource(resources.ModelResource):
         skip_unchanged = True
         report_skipped = False
 
-    def after_import_row(self, row, row_result, **kwargs):
-        # Solo procedemos si la fila resultó en una creación o actualización exitosa.
-        if row_result.import_type in [
-            RowResult.IMPORT_TYPE_NEW,
-            RowResult.IMPORT_TYPE_UPDATE,
-        ]:
-            # Obtenemos el ID del objeto Materia recién guardado. Esta es la forma más segura.
-            materia_id = row_result.object_id
+    def __init__(self, *args, **kwargs):
+        """
+        Al iniciar el Resource, agregamos dinámicamente un field
+        para cada característica y especificación existente.
+        """
+        super().__init__(*args, **kwargs)
 
-            # --- PROCESAR CARACTERÍSTICAS DINÁMICAS ---
-            caracteristica_prefix = "caracteristica_"
-            for col_name, valor in row.items():
-                if col_name is not None and col_name.startswith(caracteristica_prefix):
-                    if valor is None or str(valor).strip() == "":
-                        continue
+        # --- Características dinámicas ---
+        for c in Caracteristica.objects.all():
+            col_name = f"caracteristica_{c.nombre}"
+            self.fields[col_name] = fields.Field(column_name=col_name)
 
-                    nombre_caracteristica = col_name[len(caracteristica_prefix) :]
-                    try:
-                        caracteristica_obj = Caracteristica.objects.get(
-                            nombre=nombre_caracteristica
-                        )
+        # --- Especificaciones dinámicas ---
+        for p in Propiedad.objects.all():
+            col_name = f"especificacion_{p.nombre}"
+            self.fields[col_name] = fields.Field(column_name=col_name)
 
-                        # --- CAMBIO CLAVE ---
-                        # Usamos el ID directamente en lugar del objeto instancia.
-                        CaracteristicaMateria.objects.update_or_create(
-                            materia_id=materia_id,
-                            caracteristica=caracteristica_obj,
-                            defaults={"valor": str(valor)},
-                        )
-                    except Caracteristica.DoesNotExist:
-                        pass
+    # -------------------------------
+    # EXPORTACIÓN
+    # -------------------------------
+    def export_field(self, field, obj, **kwargs):
+        """
+        Devuelve valores dinámicos para características/especificaciones.
+        """
+        if field.column_name in ("id", "nombre", "categoria", "costo", "estado"):
+            return super().export_field(field, obj, **kwargs)
 
-            # --- PROCESAR ESPECIFICACIONES DINÁMICAS ---
-            especificacion_prefix = "especificacion_"
-            for col_name, valor in row.items():
-                if col_name is not None and col_name.startswith(especificacion_prefix):
-                    if valor is None or str(valor).strip() == "":
-                        continue
+        # Características
+        if field.column_name.startswith("caracteristica_"):
+            nombre_caract = field.column_name[len("caracteristica_") :]
+            valor = (
+                obj.valores_caracteristicas.filter(
+                    caracteristica__nombre=nombre_caract
+                ).first()
+            )
+            return valor.valor if valor else ""
 
-                    nombre_propiedad = col_name[len(especificacion_prefix) :]
-                    try:
-                        propiedad_obj = Propiedad.objects.get(nombre=nombre_propiedad)
+        # Especificaciones
+        if field.column_name.startswith("especificacion_"):
+            nombre_prop = field.column_name[len("especificacion_") :]
+            valor = (
+                obj.propiedades_especificas.filter(
+                    propiedad__nombre=nombre_prop
+                ).first()
+            )
+            return valor.valor if valor else ""
 
-                        # --- CAMBIO CLAVE ---
-                        # Usamos el ID directamente en lugar del objeto instancia.
-                        EspecificacionMateria.objects.update_or_create(
-                            materia_id=materia_id,
-                            propiedad=propiedad_obj,
-                            defaults={"valor": valor},
-                        )
-                    except Propiedad.DoesNotExist:
-                        pass
+        return ""
+
+    # -------------------------------
+    # IMPORTACIÓN
+    # -------------------------------
+    def import_obj(self, obj, data, dry_run):
+        """
+        Procesa también las columnas dinámicas al importar.
+        """
+        super().import_obj(obj, data, dry_run)
+
+        if dry_run:
+            return
+
+        obj.save()  # Necesario para tener el `id` disponible
+
+        # --- Procesar características ---
+        for c in Caracteristica.objects.all():
+            col = f"caracteristica_{c.nombre}"
+            valor = data.get(col)
+            if valor not in [None, ""]:
+                CaracteristicaMateria.objects.update_or_create(
+                    materia=obj,
+                    caracteristica=c,
+                    defaults={"valor": str(valor)},
+                )
+
+        # --- Procesar especificaciones ---
+        for p in Propiedad.objects.all():
+            col = f"especificacion_{p.nombre}"
+            valor = data.get(col)
+            if valor not in [None, ""]:
+                EspecificacionMateria.objects.update_or_create(
+                    materia=obj,
+                    propiedad=p,
+                    defaults={"valor": valor},
+                )
+
